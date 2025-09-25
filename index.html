@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fun Learning Game</title>
+  <style>
+    body {
+      font-family: Comic Sans MS, Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+      background: linear-gradient(to top, #87ceeb, #fff9c4);
+      overflow-x: hidden;
+    }
+
+    /* Sun effect */
+    .sun {
+      width: 150px;
+      height: 150px;
+      background: radial-gradient(circle, #ffeb3b, #fbc02d);
+      border-radius: 50%;
+      position: fixed;
+      top: 20px;
+      right: 20px;
+      box-shadow: 0 0 50px #fff59d, 0 0 100px #fdd835;
+      animation: spin 20s linear infinite;
+    }
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    h1 {
+      margin-top: 180px;
+      color: #ff5722;
+      font-size: 40px;
+      text-shadow: 2px 2px #fff;
+    }
+    .game {
+      margin: 20px auto;
+      padding: 20px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 20px;
+      max-width: 800px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+    h2 {
+      color: #0288d1;
+      margin-bottom: 15px;
+    }
+    button {
+      font-size: 24px;
+      margin: 10px;
+      padding: 15px 25px;
+      border: none;
+      border-radius: 12px;
+      background: #ff9800;
+      color: white;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #f57c00;
+      transform: scale(1.1);
+    }
+    .quiz-btn {
+      background: #4caf50;
+    }
+    .quiz-btn:hover {
+      background: #388e3c;
+    }
+    .stop-btn {
+      background: #e53935;
+    }
+    .stop-btn:hover {
+      background: #b71c1c;
+    }
+    .grid {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="sun"></div>
+  <h1>🌞 Fun Learning Game 🌞</h1>
+
+  <!-- ABC Sounds -->
+  <div class="game">
+    <h2>🔤 ABC with Sounds</h2>
+    <div id="abc" class="grid"></div>
+    <button class="quiz-btn" onclick="startQuiz('abc')">Start ABC Quiz</button>
+    <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+    <button id="nextBtn" style="display:none;" onclick="nextQuestion()">Next Question</button>
+  </div>
+
+  <!-- Vowel Sounds -->
+  <div class="game">
+    <h2>🅰️ Vowel Sounds (Short & Long)</h2>
+    <div id="vowels" class="grid"></div>
+    <button class="quiz-btn" onclick="startQuiz('vowels')">Start Vowel Quiz</button>
+    <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+    <button id="nextBtnVowels" style="display:none;" onclick="nextQuestion()">Next Question</button>
+  </div>
+
+  <!-- Numbers 1–20 -->
+  <div class="game">
+    <h2>🔢 Numbers 1 to 20</h2>
+    <div id="numbers" class="grid"></div>
+    <button class="quiz-btn" onclick="startQuiz('numbers')">Start Numbers Quiz</button>
+    <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+    <button id="nextBtnNumbers" style="display:none;" onclick="nextQuestion()">Next Question</button>
+  </div>
+
+  <script>
+    // ====== Speech Helper ======
+    function speak(text) {
+      const msg = new SpeechSynthesisUtterance(text);
+      msg.rate = 0.8;
+      msg.pitch = 1;
+      window.speechSynthesis.speak(msg);
+    }
+
+    // ====== ABC ======
+    const abcContainer = document.getElementById("abc");
+    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    letters.forEach(letter => {
+      const btn = document.createElement("button");
+      btn.textContent = letter;
+      btn.dataset.type = "abc";
+      btn.dataset.value = letter;
+      btn.onclick = () => speak(letter);
+      abcContainer.appendChild(btn);
+    });
+
+    // ====== Vowels ======
+    const vowelsContainer = document.getElementById("vowels");
+    const vowels = {
+      A: { short: "a as in apple", long: "a as in cake" },
+      E: { short: "e as in egg", long: "e as in tree" },
+      I: { short: "i as in igloo", long: "i as in ice" },
+      O: { short: "o as in octopus", long: "o as in open" },
+      U: { short: "u as in umbrella", long: "u as in unicorn" }
+    };
+
+    Object.keys(vowels).forEach(v => {
+      const shortBtn = document.createElement("button");
+      shortBtn.textContent = `${v} (short)`;
+      shortBtn.dataset.type = "vowels";
+      shortBtn.dataset.value = vowels[v].short;
+      shortBtn.onclick = () => speak(vowels[v].short);
+
+      const longBtn = document.createElement("button");
+      longBtn.textContent = `${v} (long)`;
+      longBtn.dataset.type = "vowels";
+      longBtn.dataset.value = vowels[v].long;
+      longBtn.onclick = () => speak(vowels[v].long);
+
+      vowelsContainer.appendChild(shortBtn);
+      vowelsContainer.appendChild(longBtn);
+    });
+
+    // ====== Numbers ======
+    const numbersContainer = document.getElementById("numbers");
+    for (let i = 1; i <= 20; i++) {
+      const btn = document.createElement("button");
+      btn.textContent = i;
+      btn.dataset.type = "numbers";
+      btn.dataset.value = i;
+      btn.onclick = () => speak(i.toString());
+      numbersContainer.appendChild(btn);
+    }
+
+    // ====== Quiz Mode ======
+    let currentAnswer = null;
+    let quizType = null;
+
+    function startQuiz(type) {
+      quizType = type;
+      nextQuestion();
+      showNextButton(type, true);
+    }
+
+    function stopQuiz() {
+      speak("Quiz stopped");
+      currentAnswer = null;
+      quizType = null;
+      hideAllNextButtons();
+    }
+
+    function nextQuestion() {
+      if (!quizType) return;
+
+      let buttons = document.querySelectorAll(`button[data-type='${quizType}']`);
+      const randomBtn = buttons[Math.floor(Math.random() * buttons.length)];
+      currentAnswer = randomBtn.dataset.value;
+
+      if (quizType === "abc") {
+        speak("Find the letter " + currentAnswer);
+      } else if (quizType === "numbers") {
+        speak("Find the number " + currentAnswer);
+      } else if (quizType === "vowels") {
+        speak("Find " + currentAnswer);
+      }
+
+      // Add quiz click behavior
+      buttons.forEach(btn => {
+        btn.onclick = () => {
+          if (btn.dataset.value == currentAnswer) {
+            btn.style.background = "#4caf50";
+            speak("Good job!");
+          } else {
+            btn.style.background = "#e53935";
+            speak("Try again!");
+            setTimeout(() => { btn.style.background = "#ff9800"; }, 1000);
+          }
+        };
+      });
+    }
+
+    // ====== Helpers for Next Button Visibility ======
+    function showNextButton(type, show) {
+      document.getElementById("nextBtn").style.display = (type === "abc" && show) ? "inline-block" : "none";
+      document.getElementById("nextBtnVowels").style.display = (type === "vowels" && show) ? "inline-block" : "none";
+      document.getElementById("nextBtnNumbers").style.display = (type === "numbers" && show) ? "inline-block" : "none";
+    }
+
+    function hideAllNextButtons() {
+      document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("nextBtnVowels").style.display = "none";
+      document.getElementById("nextBtnNumbers").style.display = "none";
+    }
+  </script>
+</body>
+</html>
