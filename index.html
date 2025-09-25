@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Fun Learning Game</title>
+  <title>Fun Learning Game Example A-F</title>
   <style>
     body {
       font-family: Comic Sans MS, Arial, sans-serif;
@@ -10,239 +10,126 @@
       padding: 0;
       text-align: center;
       background: linear-gradient(to top, #87ceeb, #fff9c4);
-      overflow-x: hidden;
     }
-
-    /* Sun effect */
-    .sun {
-      width: 150px;
-      height: 150px;
-      background: radial-gradient(circle, #ffeb3b, #fbc02d);
-      border-radius: 50%;
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      box-shadow: 0 0 50px #fff59d, 0 0 100px #fdd835;
-      animation: spin 20s linear infinite;
+    h1 { margin-top: 50px; color: #ff5722; font-size: 36px; }
+    .game { margin: 20px auto; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 15px; max-width: 700px; }
+    h2 { color: #0288d1; margin-bottom: 10px; }
+    .grid { display: flex; flex-wrap: wrap; justify-content: center; }
+    .grid button {
+      margin: 5px; padding: 10px;
+      border: none; border-radius: 8px;
+      background: #ff9800; color: white;
+      cursor: pointer; display: flex; flex-direction: column; align-items: center;
     }
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    h1 {
-      margin-top: 180px;
-      color: #ff5722;
-      font-size: 40px;
-      text-shadow: 2px 2px #fff;
-    }
-    .game {
-      margin: 20px auto;
-      padding: 20px;
-      background: rgba(255,255,255,0.9);
-      border-radius: 20px;
-      max-width: 800px;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-    h2 {
-      color: #0288d1;
-      margin-bottom: 15px;
-    }
-    button {
-      font-size: 24px;
-      margin: 10px;
-      padding: 15px 25px;
-      border: none;
-      border-radius: 12px;
-      background: #ff9800;
-      color: white;
-      cursor: pointer;
-      transition: 0.3s;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    button img {
-      width: 50px;
-      height: 50px;
-      margin-bottom: 5px;
-    }
-    button:hover {
-      transform: scale(1.1);
-    }
-    .quiz-btn {
-      background: #4caf50;
-    }
-    .quiz-btn:hover {
-      background: #388e3c;
-    }
-    .stop-btn {
-      background: #e53935;
-    }
-    .stop-btn:hover {
-      background: #b71c1c;
-    }
-    .grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-    }
+    .grid button img { width: 50px; height: 50px; margin-bottom: 5px; }
+    .quiz-btn { background: #4caf50; margin: 5px; }
+    .stop-btn { background: #e53935; margin: 5px; }
   </style>
 </head>
 <body>
-  <div class="sun"></div>
-  <h1>🌞 Fun Learning Game 🌞</h1>
+  <h1>Fun Learning Game (A-F)</h1>
 
-  <!-- ABC Sounds -->
+  <!-- ABC A-F -->
   <div class="game">
-    <h2>🔤 ABC with Sounds</h2>
+    <h2>ABC with Sounds (A-F)</h2>
     <div id="abc" class="grid"></div>
-    <button class="quiz-btn" onclick="startQuiz('abc')">Start ABC Quiz</button>
+    <button class="quiz-btn" onclick="startQuiz('abc')">Start Quiz</button>
     <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
-    <button id="nextBtn" style="display:none;" onclick="nextQuestion()">Next Question</button>
   </div>
 
-  <!-- Vowel Sounds -->
+  <!-- Vowels A, E -->
   <div class="game">
-    <h2>🅰️ Vowel Sounds (Short & Long)</h2>
+    <h2>Vowel Sounds (Short & Long)</h2>
     <div id="vowels" class="grid"></div>
-    <button class="quiz-btn" onclick="startQuiz('vowels')">Start Vowel Quiz</button>
+    <button class="quiz-btn" onclick="startQuiz('vowels')">Start Quiz</button>
     <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
-    <button id="nextBtnVowels" style="display:none;" onclick="nextQuestion()">Next Question</button>
   </div>
 
-  <!-- Numbers 1–20 -->
+  <!-- Numbers 1-6 -->
   <div class="game">
-    <h2>🔢 Numbers 1 to 20</h2>
+    <h2>Numbers 1 to 6</h2>
     <div id="numbers" class="grid"></div>
-    <button class="quiz-btn" onclick="startQuiz('numbers')">Start Numbers Quiz</button>
+    <button class="quiz-btn" onclick="startQuiz('numbers')">Start Quiz</button>
     <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
-    <button id="nextBtnNumbers" style="display:none;" onclick="nextQuestion()">Next Question</button>
   </div>
 
   <script>
-    // ====== Speech Helper ======
     function speak(text) {
       const msg = new SpeechSynthesisUtterance(text);
-      msg.rate = 0.8;
-      msg.pitch = 1;
+      msg.rate = 0.8; msg.pitch = 1;
       window.speechSynthesis.speak(msg);
     }
 
-    // ====== ABC ======
+    // ====== ABC A-F ======
     const abcContainer = document.getElementById("abc");
-    const letters = "ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("");
+    const letters = ["A","B","C","D","E","F"];
+    const letterImages = {
+      A: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/A_letter.svg/120px-A_letter.svg.png",
+      B: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/B_letter.svg/120px-B_letter.svg.png",
+      C: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/C_letter.svg/120px-C_letter.svg.png",
+      D: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/D_letter.svg/120px-D_letter.svg.png",
+      E: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/E_letter.svg/120px-E_letter.svg.png",
+      F: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/F_letter.svg/120px-F_letter.svg.png"
+    };
+
     letters.forEach(letter => {
       const btn = document.createElement("button");
-      btn.innerHTML = `<img src="https://via.placeholder.com/50?text=${letter}" alt="${letter}"><span>${letter}</span>`;
-      btn.dataset.type = "abc";
-      btn.dataset.value = letter;
+      btn.innerHTML = `<img src="${letterImages[letter]}" alt="${letter}"><span>${letter}</span>`;
+      btn.dataset.type = "abc"; btn.dataset.value = letter;
       btn.onclick = () => speak(letter);
       abcContainer.appendChild(btn);
     });
 
-    // ====== Vowels ======
+    // ====== Vowels A, E ======
     const vowelsContainer = document.getElementById("vowels");
     const vowels = {
-      A: { short: "a as in apple", long: "a as in cake" },
-      E: { short: "e as in egg", long: "e as in tree" },
-      I: { short: "i as in igloo", long: "i as in ice" },
-      O: { short: "o as in octopus", long: "o as in open" },
-      U: { short: "u as in umbrella", long: "u as in unicorn" }
+      A: { short: "a as in apple", long: "a as in cake", shortImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Apple.jpg/80px-Apple.jpg", longImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Cake.png/80px-Cake.png" },
+      E: { short: "e as in egg", long: "e as in tree", shortImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Eggs_in_a_bowl.jpg/80px-Eggs_in_a_bowl.jpg", longImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Tree_icon.png/80px-Tree_icon.png" }
     };
 
     Object.keys(vowels).forEach(v => {
       ["short","long"].forEach(type => {
         const btn = document.createElement("button");
-        btn.innerHTML = `<img src="https://via.placeholder.com/50?text=${v}" alt="${v}"><span>${v} (${type})</span>`;
-        btn.dataset.type = "vowels";
-        btn.dataset.value = vowels[v][type];
+        const img = type === "short" ? vowels[v].shortImg : vowels[v].longImg;
+        btn.innerHTML = `<img src="${img}" alt="${v} ${type}"><span>${v} (${type})</span>`;
+        btn.dataset.type = "vowels"; btn.dataset.value = vowels[v][type];
         btn.onclick = () => speak(vowels[v][type]);
         vowelsContainer.appendChild(btn);
       });
     });
 
-    // ====== Numbers ======
+    // ====== Numbers 1-6 ======
     const numbersContainer = document.getElementById("numbers");
-    for (let i = 1; i <= 20; i++) {
+    const numberImages = {
+      1:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/1_number.png/80px-1_number.png",
+      2:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/2_number.png/80px-2_number.png",
+      3:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/3_number.png/80px-3_number.png",
+      4:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/4_number.png/80px-4_number.png",
+      5:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/5_number.png/80px-5_number.png",
+      6:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/6_number.png/80px-6_number.png"
+    };
+
+    for(let i=1;i<=6;i++){
       const btn = document.createElement("button");
-      btn.innerHTML = `<img src="https://via.placeholder.com/50?text=${i}" alt="${i}"><span>${i}</span>`;
-      btn.dataset.type = "numbers";
-      btn.dataset.value = i;
-      btn.onclick = () => speak(i.toString());
+      btn.innerHTML = `<img src="${numberImages[i]}" alt="${i}"><span>${i}</span>`;
+      btn.dataset.type="numbers"; btn.dataset.value=i;
+      btn.onclick = ()=> speak(i.toString());
       numbersContainer.appendChild(btn);
     }
 
-    // ====== Quiz Mode ======
-    let currentAnswer = null;
-    let quizType = null;
-
-    function startQuiz(type) {
-      quizType = type;
-      resetButtons(type);
-      nextQuestion();
-      showNextButton(type, true);
-    }
-
-    function stopQuiz() {
-      speak("Quiz stopped");
-      if(quizType) resetButtons(quizType);
-      currentAnswer = null;
-      quizType = null;
-      hideAllNextButtons();
-    }
-
-    function resetButtons(type) {
-      const buttons = document.querySelectorAll(`button[data-type='${type}']`);
-      buttons.forEach(btn => {
-        btn.style.background = type === "vowels" ? "#ff9800" : "#ff9800";
-      });
-    }
-
-    function nextQuestion() {
-      if (!quizType) return;
-
-      resetButtons(quizType); // Reset previous colors
-
-      const buttons = document.querySelectorAll(`button[data-type='${quizType}']`);
-      const randomBtn = buttons[Math.floor(Math.random() * buttons.length)];
-      currentAnswer = randomBtn.dataset.value;
-
-      if (quizType === "abc") {
-        speak("Find the letter " + currentAnswer);
-      } else if (quizType === "numbers") {
-        speak("Find the number " + currentAnswer);
-      } else if (quizType === "vowels") {
-        speak("Find " + currentAnswer);
-      }
-
-      // Add quiz click behavior
-      buttons.forEach(btn => {
-        btn.onclick = () => {
-          if (!quizType) return;
-          if (btn.dataset.value == currentAnswer) {
-            btn.style.background = "#4caf50";
-            speak("Good job!");
-          } else {
-            btn.style.background = "#e53935";
-            speak("Try again!");
-            setTimeout(() => { btn.style.background = "#ff9800"; }, 1000);
-          }
-        };
-      });
-    }
-
-    // ====== Helpers for Next Button Visibility ======
-    function showNextButton(type, show) {
-      document.getElementById("nextBtn").style.display = (type === "abc" && show) ? "inline-block" : "none";
-      document.getElementById("nextBtnVowels").style.display = (type === "vowels" && show) ? "inline-block" : "none";
-      document.getElementById("nextBtnNumbers").style.display = (type === "numbers" && show) ? "inline-block" : "none";
-    }
-
-    function hideAllNextButtons() {
-      document.getElementById("nextBtn").style.display = "none";
-      document.getElementById("nextBtnVowels").style.display = "none";
-      document.getElementById("nextBtnNumbers").style.display = "none";
+    // ====== Quiz ======
+    let currentAnswer=null, quizType=null;
+    function startQuiz(type){quizType=type;nextQuestion();}
+    function stopQuiz(){currentAnswer=null;quizType=null;}
+    function nextQuestion(){
+      if(!quizType)return;
+      let buttons=document.querySelectorAll(`button[data-type='${quizType}']`);
+      const randomBtn=buttons[Math.floor(Math.random()*buttons.length)];
+      currentAnswer=randomBtn.dataset.value;
+      if(quizType==="abc")speak("Find letter "+currentAnswer);
+      else if(quizType==="numbers")speak("Find number "+currentAnswer);
+      else if(quizType==="vowels")speak("Find "+currentAnswer);
+      buttons.forEach(btn=>btn.onclick=()=>{if(btn.dataset.value==currentAnswer){btn.style.background="#4caf50";speak("Good job!");}else{btn.style.background="#e53935";speak("Try again!");setTimeout(()=>{btn.style.background="#ff9800"},1000)}})
     }
   </script>
 </body>
