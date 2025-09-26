@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Fun Learning Game A-Z, Vowels, 1-20</title>
+<style>
+body { font-family: Comic Sans MS, Arial, sans-serif; margin:0; padding:0; text-align:center; background: linear-gradient(to top, #87ceeb, #fff9c4);}
+h1 { margin-top:30px; color:#ff5722; font-size:36px; }
+.game { margin:20px auto; padding:20px; background: rgba(255,255,255,0.9); border-radius:15px; max-width:900px;}
+h2 { color:#0288d1; margin-bottom:10px;}
+.grid { display:flex; flex-wrap:wrap; justify-content:center;}
+.grid button { margin:5px; padding:10px; border:none; border-radius:12px; background:#ff9800; cursor:pointer; display:flex; flex-direction:column; align-items:center; transition:0.3s; width:100px; position:relative; }
+.grid button img { width:60px; height:60px; margin-bottom:5px; transition: transform 0.4s ease; }
+.grid button span { transition: all 0.3s; display:inline-block; font-weight:bold; font-size:16px; }
+.pop { animation: pop 0.4s ease; background-color:#ffeb3b; color:#000; padding:2px 4px; border-radius:4px;}
+@keyframes pop { 0% {transform: scale(1);} 50% {transform: scale(1.8);} 100% {transform: scale(1);} }
+.sparkle { position:absolute; width:8px; height:8px; background:yellow; border-radius:50%; pointer-events:none; animation: sparkleAnim 0.6s linear forwards; }
+@keyframes sparkleAnim { 0% { opacity:1; transform: translate(0,0) scale(1); } 100% { opacity:0; transform: translate(calc(50px - 25px), -50px) scale(0); } }
+.quiz-btn, .stop-btn, .repeat-btn { margin:5px; padding:12px 18px; border-radius:8px; color:white; cursor:pointer; border:none; font-size:16px; }
+.quiz-btn { background:#4caf50; }
+.stop-btn { background:#e53935; }
+.repeat-btn { background:#2196f3; }
+.score { font-size:18px; color:#000; margin-top:10px;}
+</style>
+</head>
+<body>
+
+<h1>Fun Learning Game A-Z, Vowels, 1-20</h1>
+
+<div class="game">
+  <h2>ABC Letters (A-Z)</h2>
+  <div id="abc" class="grid"></div>
+  <button class="quiz-btn" onclick="startQuiz('abc')">Start Quiz</button>
+  <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+  <button class="repeat-btn" onclick="repeatQuestion()">Repeat Question</button>
+  <div class="score" id="score-abc">Score: 0</div>
+</div>
+
+<div class="game">
+  <h2>Vowel Words (Short & Long)</h2>
+  <div id="vowels" class="grid"></div>
+  <button class="quiz-btn" onclick="startQuiz('vowels')">Start Quiz</button>
+  <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+  <button class="repeat-btn" onclick="repeatQuestion()">Repeat Question</button>
+  <div class="score" id="score-vowels">Score: 0</div>
+</div>
+
+<div class="game">
+  <h2>Numbers 1 to 20</h2>
+  <div id="numbers" class="grid"></div>
+  <button class="quiz-btn" onclick="startQuiz('numbers')">Start Quiz</button>
+  <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+  <button class="repeat-btn" onclick="repeatQuestion()">Repeat Question</button>
+  <div class="score" id="score-numbers">Score: 0</div>
+</div>
+
+<script>
+// ===== Utilities =====
+let currentUtterance = null;
+function speakAsync(text){
+    return new Promise(resolve=>{
+        if(currentUtterance) window.speechSynthesis.cancel();
+        currentUtterance = new SpeechSynthesisUtterance(text);
+        currentUtterance.rate=0.9;
+        currentUtterance.pitch=1;
+        currentUtterance.onend = resolve;
+        window.speechSynthesis.speak(currentUtterance);
+    });
+}
+
+function delay(ms){ return new Promise(resolve=>setTimeout(resolve, ms)); }
+
+async function speakLetterAsync(char){
+    if(currentUtterance) window.speechSynthesis.cancel();
+    return new Promise(resolve=>{
+        const msg = new SpeechSynthesisUtterance(char);
+        msg.rate=0.9; msg.pitch=1; msg.onend=resolve;
+        currentUtterance = msg;
+        window.speechSynthesis.speak(msg);
+    });
+}
+
+function createSparkle(btn){ 
+  const s=document.createElement('div'); 
+  s.className='sparkle'; 
+  s.style.left=Math.random()*70+'px'; 
+  s.style.top=Math.random()*50+'px'; 
+  btn.appendChild(s); 
+  setTimeout(()=>s.remove(),600); 
+}
+
+async function spellWordWithEffects(btn, word){
+  const span=btn.querySelector('span');
+  const img=btn.querySelector('img');
+  img.style.transition = 'transform 0.4s ease';
+  img.style.transform='scale(1.5)'; // enlarge
+
+  for(let i=0;i<word.length;i++){
+    span.innerHTML = word.split('').map((c,j)=> j===i ? `<span class="pop">${c}</span>` : c).join('');
+    await speakLetterAsync(word[i]);
+    createSparkle(btn);
+    await delay(400);
+  }
+
+  span.innerHTML = word;
+  img.style.transform='scale(1)'; // return to normal
+}
+
+// ===== Button Click Handler =====
+function onButtonClick(btn, type, value){
+    let word = value;
+    let sound = value;
+
+    if(type === 'abc') word = abcWords[value];
+    if(type === 'numbers') word = numberNames[parseInt(value)-1];
+    if(type === 'vowels'){
+        for(let v in vowelWords){
+            for(let t of ['short','long']){
+                if(value.includes(v+'_'+t)){
+                    word = vowelWords[v][t];
+                    sound = v;
+                }
+            }
+        }
+    }
+
+    (async()=>{
+        await speakAsync(sound);          // say the letter/vowel/number
+        await speakAsync(word);           // say the full word
+        await spellWordWithEffects(btn, word); // spell with effects
+    })();
+}
+
+// ===== Create Buttons =====
+function createButton(container,img,label,type){
+  const btn=document.createElement('button');
+  const image=document.createElement('img'); image.src=img; image.alt=label;
+  btn.appendChild(image);
+  const span=document.createElement('span'); span.textContent=label; btn.appendChild(span);
+  btn.dataset.type=type; btn.dataset.value=label;
+  btn.onclick = ()=> onButtonClick(btn,type,label);
+  container.appendChild(btn);
+  return btn;
+}
+
+// ===== ABC Letters =====
+const abcContainer=document.getElementById("abc");
+const abcWords={ A:"Apple",B:"Ball",C:"Cat",D:"Dog",E:"Egg", F:"Fish",G:"Goat",H:"Hat",I:"Ice",J:"Jar", K:"Kite",L:"Lion",M:"Moon",N:"Nest",O:"Orange", P:"Pig",Q:"Queen",R:"Rat",S:"Sun",T:"Tiger", U:"Umbrella",V:"Van",W:"Wolf",X:"Xylophone",Y:"Yam",Z:"Zebra" };
+Object.keys(abcWords).forEach(letter=>{
+  const word=abcWords[letter];
+  const imgPath=`../img/${letter}_${word.toLowerCase()}.jpeg`;
+  createButton(abcContainer,imgPath,letter,"abc");
+});
+
+// ===== Vowels =====
+const vowelsContainer=document.getElementById("vowels");
+const vowelWords={ A:{short:"Apple",long:"Ant"}, E:{short:"Egg",long:"Elephant"}, I:{short:"Igloo",long:"Ice"}, O:{short:"Octopus",long:"Orange"}, U:{short:"Umbrella",long:"Unicorn"} };
+Object.keys(vowelWords).forEach(v=>{
+  ["short","long"].forEach(type=>{
+    const word=vowelWords[v][type];
+    const imgPath=`../img/${v}_${word.toLowerCase()}.jpeg`;
+    createButton(vowelsContainer,imgPath,`${v}_${type}`,"vowels");
+  });
+});
+
+// ===== Numbers =====
+const numberNames=["One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen","Twenty"];
+const numbersContainer=document.getElementById("numbers");
+for(let i=1;i<=20;i++){
+  const name=numberNames[i-1];
+  const imgPath=`../img/${i}.jpeg`;
+  createButton(numbersContainer,imgPath,i.toString(),"numbers");
+}
+
+// ===== Quiz =====
+let currentAnswer=null, quizType=null, currentQuestion=null;
+let scores={ abc:0, vowels:0, numbers:0 };
+
+function updateScore(){ 
+    if(quizType) document.getElementById(`score-${quizType}`).textContent = "Score: "+scores[quizType];
+}
+
+function startQuiz(type){ quizType=type; nextQuestion(); }
+function stopQuiz(){ quizType=null; currentAnswer=null; currentQuestion=null; speakAsync("Quiz stopped."); }
+
+function setButtonsDisabled(disabled){
+    document.querySelectorAll(`button[data-type='${quizType}']`).forEach(b=>b.disabled=disabled);
+}
+
+async function nextQuestion() {
+    if (!quizType) return;
+    const buttons = document.querySelectorAll(`button[data-type='${quizType}']`);
+    const randomBtn = buttons[Math.floor(Math.random() * buttons.length)];
+    currentAnswer = randomBtn.dataset.value;
+
+    const style = Math.floor(Math.random() * 3);
+    let questionText="", wordToSay=currentAnswer;
+
+    if(quizType==="abc") wordToSay=abcWords[currentAnswer];
+    else if(quizType==="numbers") wordToSay=numberNames[parseInt(currentAnswer)-1];
+    else if(quizType==="vowels"){
+        for(let v in vowelWords){
+            for(let t of ["short","long"]){
+                if(currentAnswer.includes(v+"_"+t)){
+                    wordToSay=vowelWords[v][t]; break;
+                }
+            }
+        }
+    }
+
+    if(style===0) questionText=`Find ${quizType==="numbers"?currentAnswer:currentAnswer.split("_")[0]}`;
+    else if(style===1) questionText=`Find the word ${wordToSay}`;
+    else questionText=`Find the image with ${wordToSay}`;
+
+    currentQuestion={question:questionText};
+    await speakAsync(questionText);
+
+    // remove old handlers
+    buttons.forEach(btn=>{
+        const newBtn=btn.cloneNode(true);
+        btn.parentNode.replaceChild(newBtn, btn);
+    });
+
+    const freshButtons = document.querySelectorAll(`button[data-type='${quizType}']`);
+    freshButtons.forEach(btn=>{
+        btn.onclick = async ()=>{
+            if(!quizType) return;
+            let clickedWord=btn.dataset.value;
+            if(quizType==="abc") clickedWord=abcWords[clickedWord];
+            else if(quizType==="numbers") clickedWord=numberNames[parseInt(clickedWord)-1];
+            else if(quizType==="vowels"){
+                for(let v in vowelWords){
+                    for(let t of ["short","long"]){
+                        if(btn.dataset.value.includes(v+"_"+t)){
+                            clickedWord=vowelWords[v][t]; break;
+                        }
+                    }
+                }
+            }
+
+            setButtonsDisabled(true);
+            if(btn.dataset.value===currentAnswer){
+                btn.style.background="#4caf50";
+                scores[quizType]++;
+                updateScore();
+                await speakAsync("Good job!");
+                await spellWordWithEffects(btn, clickedWord);
+                btn.style.background="#ff9800";
+                setButtonsDisabled(false);
+                nextQuestion();
+            }else{
+                btn.style.background="#e53935";
+                await speakAsync("Try again! You can do this!");
+                btn.style.background="#ff9800";
+                setButtonsDisabled(false);
+            }
+        }
+    });
+}
+
+// ===== Repeat Question =====
+function repeatQuestion(){ if(currentQuestion && currentQuestion.question) speakAsync(currentQuestion.question); }
+</script>
+</body>
+</html>
