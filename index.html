@@ -1,136 +1,151 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Fun Learning Game Example A-F</title>
-  <style>
-    body {
-      font-family: Comic Sans MS, Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-      background: linear-gradient(to top, #87ceeb, #fff9c4);
-    }
-    h1 { margin-top: 50px; color: #ff5722; font-size: 36px; }
-    .game { margin: 20px auto; padding: 20px; background: rgba(255,255,255,0.9); border-radius: 15px; max-width: 700px; }
-    h2 { color: #0288d1; margin-bottom: 10px; }
-    .grid { display: flex; flex-wrap: wrap; justify-content: center; }
-    .grid button {
-      margin: 5px; padding: 10px;
-      border: none; border-radius: 8px;
-      background: #ff9800; color: white;
-      cursor: pointer; display: flex; flex-direction: column; align-items: center;
-    }
-    .grid button img { width: 50px; height: 50px; margin-bottom: 5px; }
-    .quiz-btn { background: #4caf50; margin: 5px; }
-    .stop-btn { background: #e53935; margin: 5px; }
-  </style>
+<meta charset="UTF-8">
+<title>Fun Learning Game A-Z, Vowels, 1-20</title>
+<style>
+body { font-family: Comic Sans MS, Arial, sans-serif; margin:0; padding:0; text-align:center; background: linear-gradient(to top, #87ceeb, #fff9c4);}
+h1 { margin-top:30px; color:#ff5722; font-size:36px; }
+.game { margin:20px auto; padding:20px; background: rgba(255,255,255,0.9); border-radius:15px; max-width:900px;}
+h2 { color:#0288d1; margin-bottom:10px;}
+.grid { display:flex; flex-wrap:wrap; justify-content:center;}
+.grid button { margin:5px; padding:10px; border:none; border-radius:8px; background:#ff9800; cursor:pointer; display:flex; flex-direction:column; align-items:center; transition:0.3s; width:80px; position:relative; }
+.grid button img { width:50px; height:50px; margin-bottom:5px; transition: transform 0.3s; }
+.grid button span { transition: all 0.3s; display:inline-block; font-weight:bold;}
+.pop { animation: pop 0.4s ease; }
+@keyframes pop { 0% {transform: scale(1);} 50% {transform: scale(1.5);} 100% {transform: scale(1);} }
+.sparkle { position:absolute; width:5px; height:5px; background:yellow; border-radius:50%; pointer-events:none; animation: sparkleAnim 0.6s linear forwards; }
+@keyframes sparkleAnim { 0% { opacity:1; transform: translate(0,0) scale(1); } 100% { opacity:0; transform: translate(calc(50px - 25px), -50px) scale(0); } }
+.quiz-btn { background:#4caf50; margin:5px; padding:10px 15px; border-radius:8px; color:white; cursor:pointer; border:none; }
+.stop-btn { background:#e53935; margin:5px; padding:10px 15px; border-radius:8px; color:white; cursor:pointer; border:none; }
+</style>
 </head>
 <body>
-  <h1>Fun Learning Game (A-F)</h1>
 
-  <!-- ABC A-F -->
-  <div class="game">
-    <h2>ABC with Sounds (A-F)</h2>
-    <div id="abc" class="grid"></div>
-    <button class="quiz-btn" onclick="startQuiz('abc')">Start Quiz</button>
-    <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
-  </div>
+<h1>Fun Learning Game A-Z, Vowels, 1-20</h1>
 
-  <!-- Vowels A, E -->
-  <div class="game">
-    <h2>Vowel Sounds (Short & Long)</h2>
-    <div id="vowels" class="grid"></div>
-    <button class="quiz-btn" onclick="startQuiz('vowels')">Start Quiz</button>
-    <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
-  </div>
+<div class="game">
+  <h2>ABC Letters (A-Z)</h2>
+  <div id="abc" class="grid"></div>
+  <button class="quiz-btn" onclick="startQuiz('abc')">Start Quiz</button>
+  <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+</div>
 
-  <!-- Numbers 1-6 -->
-  <div class="game">
-    <h2>Numbers 1 to 6</h2>
-    <div id="numbers" class="grid"></div>
-    <button class="quiz-btn" onclick="startQuiz('numbers')">Start Quiz</button>
-    <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
-  </div>
+<div class="game">
+  <h2>Vowel Words (Short & Long)</h2>
+  <div id="vowels" class="grid"></div>
+  <button class="quiz-btn" onclick="startQuiz('vowels')">Start Quiz</button>
+  <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+</div>
 
-  <script>
-    function speak(text) {
-      const msg = new SpeechSynthesisUtterance(text);
-      msg.rate = 0.8; msg.pitch = 1;
-      window.speechSynthesis.speak(msg);
-    }
+<div class="game">
+  <h2>Numbers 1 to 20</h2>
+  <div id="numbers" class="grid"></div>
+  <button class="quiz-btn" onclick="startQuiz('numbers')">Start Quiz</button>
+  <button class="stop-btn" onclick="stopQuiz()">Stop Quiz</button>
+</div>
 
-    // ====== ABC A-F ======
-    const abcContainer = document.getElementById("abc");
-    const letters = ["A","B","C","D","E","F"];
-    const letterImages = {
-      A: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/A_letter.svg/120px-A_letter.svg.png",
-      B: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/B_letter.svg/120px-B_letter.svg.png",
-      C: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/C_letter.svg/120px-C_letter.svg.png",
-      D: "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/D_letter.svg/120px-D_letter.svg.png",
-      E: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/E_letter.svg/120px-E_letter.svg.png",
-      F: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/61/F_letter.svg/120px-F_letter.svg.png"
-    };
+<script>
+// ===== Utilities =====
+function speak(text){
+  const msg = new SpeechSynthesisUtterance(text);
+  msg.rate = 0.9; msg.pitch = 1;
+  window.speechSynthesis.speak(msg);
+}
+function delay(ms){ return new Promise(resolve=>setTimeout(resolve, ms)); }
+function speakLetterAsync(char){ return new Promise(resolve=>{ const msg = new SpeechSynthesisUtterance(char); msg.rate=0.9; msg.pitch=1; msg.onend=resolve; window.speechSynthesis.speak(msg); }); }
+function createSparkle(btn){ const s=document.createElement('div'); s.className='sparkle'; s.style.left=Math.random()*60+'px'; s.style.top=Math.random()*40+'px'; btn.appendChild(s); setTimeout(()=>s.remove(),600); }
+async function spellWordWithEffects(btn, word){
+  const span=btn.querySelector('span');
+  const img=btn.querySelector('img');
+  img.style.transform='scale(1.3)';
+  for(let i=0;i<word.length;i++){
+    span.innerHTML = word.split('').map((c,j)=> j===i ? `<span class="pop" style="background-color:#ffeb3b;color:#000;padding:2px;border-radius:3px">${c}</span>` : c).join('');
+    await speakLetterAsync(word[i]);
+    createSparkle(btn);
+    await delay(400);
+  }
+  span.innerHTML = word;
+  img.style.transform='scale(1)';
+}
 
-    letters.forEach(letter => {
-      const btn = document.createElement("button");
-      btn.innerHTML = `<img src="${letterImages[letter]}" alt="${letter}"><span>${letter}</span>`;
-      btn.dataset.type = "abc"; btn.dataset.value = letter;
-      btn.onclick = () => speak(letter);
-      abcContainer.appendChild(btn);
+// ===== Button Creation =====
+function createButton(container,img,label,type,onClick){
+  const btn=document.createElement('button');
+  const image=document.createElement('img'); image.src=img; image.alt=label;
+  btn.appendChild(image);
+  const span=document.createElement('span'); span.textContent=label; btn.appendChild(span);
+  btn.dataset.type=type; btn.dataset.value=label;
+  btn.onclick=onClick; container.appendChild(btn); return btn;
+}
+
+// ===== ABC Letters =====
+const abcContainer=document.getElementById("abc");
+const abcWords={ A:"Apple",B:"Ball",C:"Cat",D:"Dog",E:"Egg", F:"Fish",G:"Goat",H:"Hat",I:"Ice",J:"Jar", K:"Kite",L:"Lion",M:"Moon",N:"Nest",O:"Orange", P:"Pig",Q:"Queen",R:"Rat",S:"Sun",T:"Tiger", U:"Umbrella",V:"Van",W:"Wolf",X:"Xylophone",Y:"Yam",Z:"Zebra" };
+Object.keys(abcWords).forEach(letter=>{
+  const word=abcWords[letter];
+  const imgPath=`../img/${letter}_${word.toLowerCase()}.jpeg`;
+  createButton(abcContainer,imgPath,letter,"abc",(e)=>{
+    speak(`${letter} for ${word}`);
+    spellWordWithEffects(e.currentTarget, word);
+  });
+});
+
+// ===== Vowels =====
+const vowelsContainer=document.getElementById("vowels");
+const vowelWords={ A:{short:"Apple",long:"Ant"}, E:{short:"Egg",long:"Elephant"}, I:{short:"Igloo",long:"Ice"}, O:{short:"Octopus",long:"Orange"}, U:{short:"Umbrella",long:"Unicorn"} };
+Object.keys(vowelWords).forEach(v=>{
+  ["short","long"].forEach(type=>{
+    const word=vowelWords[v][type];
+    const imgPath=`../img/${v}_${word.toLowerCase()}.jpeg`;
+    createButton(vowelsContainer,imgPath,`${v} (${type})`,"vowels",(e)=>{
+      speak(`${v} for ${word}`);
+      spellWordWithEffects(e.currentTarget, word);
     });
+  });
+});
 
-    // ====== Vowels A, E ======
-    const vowelsContainer = document.getElementById("vowels");
-    const vowels = {
-      A: { short: "a as in apple", long: "a as in cake", shortImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/15/Apple.jpg/80px-Apple.jpg", longImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/47/Cake.png/80px-Cake.png" },
-      E: { short: "e as in egg", long: "e as in tree", shortImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/Eggs_in_a_bowl.jpg/80px-Eggs_in_a_bowl.jpg", longImg: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Tree_icon.png/80px-Tree_icon.png" }
+// ===== Numbers =====
+const numberNames=["One","Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen","Twenty"];
+const numbersContainer=document.getElementById("numbers");
+for(let i=1;i<=20;i++){
+  const name=numberNames[i-1];
+  const imgPath=`../img/${i}.jpeg`;
+  createButton(numbersContainer,imgPath,i.toString(),"numbers",(e)=>{
+    speak(i.toString());
+    spellWordWithEffects(e.currentTarget, name);
+  });
+}
+
+// ===== Quiz =====
+let currentAnswer=null, quizType=null;
+function startQuiz(type){ quizType=type; nextQuestion(); }
+function stopQuiz(){ quizType=null; currentAnswer=null; }
+
+function nextQuestion(){
+  if(!quizType) return;
+  const buttons=document.querySelectorAll(`button[data-type='${quizType}']`);
+  const randomBtn=buttons[Math.floor(Math.random()*buttons.length)];
+  currentAnswer=randomBtn.dataset.value;
+  if(quizType==="abc") speak("Find "+currentAnswer);
+  else if(quizType==="numbers") speak("Find number "+currentAnswer);
+  else speak("Find "+currentAnswer);
+
+  buttons.forEach(btn=>{
+    btn.onclick=()=>{
+      if(!quizType) return;
+      speak(btn.dataset.value);
+      if(btn.dataset.value===currentAnswer){
+        btn.style.background="#4caf50";
+        spellWordWithEffects(btn, btn.dataset.value).then(()=>{ btn.style.background="#ff9800"; nextQuestion(); });
+      } else {
+        btn.style.background="#e53935";
+        speak("Try again!");
+        setTimeout(()=>btn.style.background="#ff9800",1000);
+      }
     };
-
-    Object.keys(vowels).forEach(v => {
-      ["short","long"].forEach(type => {
-        const btn = document.createElement("button");
-        const img = type === "short" ? vowels[v].shortImg : vowels[v].longImg;
-        btn.innerHTML = `<img src="${img}" alt="${v} ${type}"><span>${v} (${type})</span>`;
-        btn.dataset.type = "vowels"; btn.dataset.value = vowels[v][type];
-        btn.onclick = () => speak(vowels[v][type]);
-        vowelsContainer.appendChild(btn);
-      });
-    });
-
-    // ====== Numbers 1-6 ======
-    const numbersContainer = document.getElementById("numbers");
-    const numberImages = {
-      1:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/1_number.png/80px-1_number.png",
-      2:"https://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/2_number.png/80px-2_number.png",
-      3:"https://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/3_number.png/80px-3_number.png",
-      4:"https://upload.wikimedia.org/wikipedia/commons/thumb/3/34/4_number.png/80px-4_number.png",
-      5:"https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/5_number.png/80px-5_number.png",
-      6:"https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/6_number.png/80px-6_number.png"
-    };
-
-    for(let i=1;i<=6;i++){
-      const btn = document.createElement("button");
-      btn.innerHTML = `<img src="${numberImages[i]}" alt="${i}"><span>${i}</span>`;
-      btn.dataset.type="numbers"; btn.dataset.value=i;
-      btn.onclick = ()=> speak(i.toString());
-      numbersContainer.appendChild(btn);
-    }
-
-    // ====== Quiz ======
-    let currentAnswer=null, quizType=null;
-    function startQuiz(type){quizType=type;nextQuestion();}
-    function stopQuiz(){currentAnswer=null;quizType=null;}
-    function nextQuestion(){
-      if(!quizType)return;
-      let buttons=document.querySelectorAll(`button[data-type='${quizType}']`);
-      const randomBtn=buttons[Math.floor(Math.random()*buttons.length)];
-      currentAnswer=randomBtn.dataset.value;
-      if(quizType==="abc")speak("Find letter "+currentAnswer);
-      else if(quizType==="numbers")speak("Find number "+currentAnswer);
-      else if(quizType==="vowels")speak("Find "+currentAnswer);
-      buttons.forEach(btn=>btn.onclick=()=>{if(btn.dataset.value==currentAnswer){btn.style.background="#4caf50";speak("Good job!");}else{btn.style.background="#e53935";speak("Try again!");setTimeout(()=>{btn.style.background="#ff9800"},1000)}})
-    }
-  </script>
+  });
+}
+</script>
 </body>
 </html>
